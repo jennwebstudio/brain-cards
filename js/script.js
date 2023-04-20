@@ -15,7 +15,7 @@ const initApp = async () => {
   const pairsObj = createPairs(app);
 
   const allSectionUnmount = () => {
-    [categoryObj, editCategoryObj].forEach(obj => obj.unmount());
+    [categoryObj, editCategoryObj, pairsObj].forEach(obj => obj.unmount());
   };
 
   const renderIndex = async (e) => {
@@ -24,6 +24,8 @@ const initApp = async () => {
     allSectionUnmount();
     
     const categories = await fetchCategories();
+
+    headerObj.updateHeaderTitle('Категории');
 
     if (categories.error) {
       app.append(createElement('p', {
@@ -55,7 +57,21 @@ const initApp = async () => {
       editCategoryObj.mount(dataCards);
       return;
     }
+
+    if(target.closest('.category__del')) {
+      console.log('Delete');
+      return;
+    }
+
+    if(categoryItem) {
+      const dataCards = await fetchCards(categoryItem.dataset.id);
+      allSectionUnmount();
+      headerObj.updateHeaderTitle(dataCards.title);
+      pairsObj.mount(dataCards);
+    }
   });
+
+  pairsObj.buttonReturn.addEventListener('click', renderIndex);
 };
 
 initApp();
